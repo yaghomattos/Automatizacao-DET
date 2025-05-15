@@ -1,11 +1,21 @@
 async function lerCNPJsDoCSV() {
 	const response = await fetch(chrome.runtime.getURL("empresas.csv"));
 	const texto = await response.text();
-	return texto
+
+    const linhas = texto
 		.split("\n")
-		.map(linha => linha.trim())
-		.filter(cnpj => /^\d{14}$/.test(cnpj));
+        .map(l => l.trim())
+        .filter(Boolean);
+
+    // remove cabeçalho
+    const dados = linhas.slice(1).map(linha => {
+        const [cnpj, nome, id] = linha.split(";").map(campo => campo.trim());
+        return { cnpj, nome, id };
+    });
+
+    return dados
 }
+
 
 async function executarParaCNPJ(tabId, cnpj) {
 	return new Promise((resolve) => {
@@ -23,18 +33,18 @@ async function executarParaCNPJ(tabId, cnpj) {
 
 
 function gerarCSV(resultados) {
-	const linhas = [["cnpj", "data", "mensagem"]];
+	const linhas = [["id", "nome", "data", "mensagem"]];
 	console.log('resultado', resultados)
 	for (const r of resultados) {
 		if (r.success && Array.isArray(r.result)) {
             for (const msg of r.result) {
                 const data = msg?.data || "";
                 const texto = msg?.mensagem || ""
-                linhas.push([r.cnpj, data, `"${texto}"`]);
+                linhas.push([r.id, r.nome, data, `"${texto}"`]);
             }
         }
 	}
-	return linhas.map(l => l.join(",")).join("\n");
+	return "\uFEFF" + linhas.map(l => l.join(";")).join("\n");
 }
 
 async function gerarRelatorioNaAba(tabId, resultados) {
@@ -55,8 +65,8 @@ async function gerarRelatorioNaAba(tabId, resultados) {
 }
 
 async function lerCNPJsEExecutar() {
-	const cnpjs = await lerCNPJsDoCSV();
-	if (!cnpjs.length) {
+	const empresas = await lerCNPJsDoCSV();
+	if (!empresas.length) {
 		console.warn("Nenhum CNPJ válido encontrado no arquivo.");
 		return;
 	}
@@ -70,10 +80,11 @@ async function lerCNPJsEExecutar() {
 
 	const resultados = [];
 
-	for (const cnpj of cnpjs) {
-		console.log(`Iniciando execução para: ${cnpj}`);
+	for (const empresa of empresas) {
+		const { cnpj, nome, id } = empresa;
+		console.log("Processando:", cnpj, nome, id);
 		const resultado = await executarParaCNPJ(activeTabId, cnpj);
-		resultados.push(resultado);
+		resultados.push({ ...empresa, ...resultado });
 		await new Promise(r => setTimeout(r, 5000));
 	}
 
