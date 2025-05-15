@@ -376,7 +376,7 @@ function execucao(cnpjAlvo) {
 
 				async function extrairHoraEMensagem() {
 					const linhas = document.querySelectorAll('.tabela.mensagens .linha');
-					if (!linhas) {
+					if (!linhas.length) {
 						console.warn("Nenhuma linha de mensagem encontrada.");
 						return [];
 					}
