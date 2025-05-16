@@ -411,13 +411,19 @@ function execucao(cnpjAlvo) {
 						const mes = meses[mesStr.toLowerCase()];
 						const ano = 2000 + parseInt(anoStr, 10); // Assume formato 2 dígitos
 
-						if (isNaN(dia) || isNaN(mes) || isNaN(ano)) continue;
+						if (isNaN(dia) || isNaN(mes) || isNaN(ano)) {
+							console.error("Data inválida:", dataTexto); // Ou tratar o erro
+						}
 
 						const dataMensagem = new Date(ano, mes, dia);
+
+						const primeiroDiaDoMesAnterior = new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1);
+						primeiroDiaDoMesAnterior.setHours(0, 0, 0, 0);
+
 						const umMesAtras = new Date();
 						umMesAtras.setMonth(umMesAtras.getMonth() - 1);
 
-						if (dataMensagem >= umMesAtras && dataMensagem <= hoje) {
+						if (dataMensagem >= primeiroDiaDoMesAnterior && dataMensagem <= hoje) {
 							mensagensRecentes.push({
 								data: dataTexto,
 								mensagem
