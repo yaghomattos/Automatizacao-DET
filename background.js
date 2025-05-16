@@ -436,6 +436,25 @@ function execucao(cnpjAlvo) {
 				// 	return { data, mensagem };
 				// }
 
+				async function fecharModal() {
+					const modal = document.querySelector('modal-container.modal.show');
+					const botaoFechar = modal?.querySelector('button[aria-label="Fechar"]');
+
+					if (botaoFechar && typeof botaoFechar.click === 'function') {
+						try {
+							botaoFechar.scrollIntoView({ block: "center" });
+							await sleep(300);
+							botaoFechar.click();
+							console.log("Clique no botão 'Fechar' realizado com sucesso.");
+							await sleep(1000);
+						} catch (erro) {
+							console.warn("Erro ao tentar clicar em 'Fechar':", erro.message);
+						}
+					} else {
+						console.warn("Botão 'Fechar' não encontrado ou inacessível.");
+					}
+				}
+
 				// --- LÓGICA PRINCIPAL ORQUESTRADA ---
 				let brSelectPerfil = null;
 				for (let i = 0; i < MAX_TENTATIVAS_POLLING; i++) {
@@ -493,22 +512,25 @@ function execucao(cnpjAlvo) {
 				// Acessar Caixa Postal
 				try {
 					await esperarElementoSumir("modal-container.modal.show", { timeout: 10000 })
-					await sleep(5000);
+					await sleep(2000);
 					await clicarCaixaPostal();
 				} catch (e) {
 					console.warn("Modal não sumiu dentro do tempo esperado:", e.message);
+					await sleep(2000);
+					await fecharModal();
+					await sleep(2000);
 					return { success: false, stage: 'espera_modal', message: e.message };
 				}
 
 				// Extrair informacoes
-				await sleep(5000);
+				await sleep(2000);
 				const resultado = await extrairHoraEMensagem();
-				await sleep(5000);
+				await sleep(2000);
 
 				// Voltar a home
-				await sleep(5000);
+				await sleep(2000);
 				await clicarBotaoInicio();
-				await sleep(5000);
+				await sleep(2000);
 
 				return { success: true, stage: 'complete', message: "Processo concluído com sucesso!", result: resultado };
 			}
