@@ -1,15 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
+
 <head>
-    <title>Automatizador DET</title>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="popup.css">
+	<meta charset="UTF-8" />
+	<title>Automatizador DET</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="popup.css" />
 </head>
+
 <body>
-    <h3>Robô DET</h3>
-    <p>Após logar no DET, clique abaixo:</p>
-    <button id="executarAcaoBtn">Iniciar</button>
-    <div id="statusMessage"></div>
-    <script src="popup.js"></script>
+	<div class="app-container">
+		<header class="app-header">
+			<img src="logo.svg" alt="Logo Robô DET" class="logo" />
+			<h1>Robô DET</h1>
+		</header>
+
+		<main>
+			<div class="form-group">
+				<label for="csvFile">Importar arquivo <strong>.csv</strong> com CNPJs:</label>
+				<input type="file" id="csvFile" accept=".csv" />
+				<div id="fileMessage" class="validation-message"></div>
+			</div>
+
+			<div class="form-group">
+				<label>Portal DET:</label>
+				<div id="paginaMessage" class="validation-message"></div>
+			</div>
+
+			<button id="executarAcaoBtn" class="btn-primary">Iniciar processamento</button>
+			<div id="statusMessage" class="status-message"></div>
+		</main>
+
+		<footer class="app-footer">
+			<small>Desenvolvido por <strong>Evolvi Soluções</strong> – Tecnologia que impulsiona negócios</small>
+		</footer>
+	</div>
+
+	<script src="popup.js"></script>
 </body>
+
 </html>

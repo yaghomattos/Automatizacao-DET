@@ -1,19 +1,10 @@
 async function lerCNPJsDoCSV() {
-	const response = await fetch(chrome.runtime.getURL("empresas.csv"));
-	const texto = await response.text();
-
-    const linhas = texto
-		.split("\n")
-        .map(l => l.trim())
-        .filter(Boolean);
-
-    // remove cabeçalho
-    const dados = linhas.slice(1).map(linha => {
-        const [cnpj, nome, id] = linha.split(";").map(campo => campo.trim());
-        return { cnpj, nome, id };
+    return new Promise((resolve) => {
+        chrome.storage.local.get("empresasCsv", (result) => {
+            const dados = result.empresasCsv || [];
+            resolve(dados);
+        });
     });
-
-    return dados
 }
 
 
